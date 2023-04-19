@@ -4,6 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Country(
-    val name: String,
-    val capital: String
+    val name: CountryName,
+    val capital: List<String>
+)
+
+@Serializable
+data class CountryName(
+    val common: String
 )

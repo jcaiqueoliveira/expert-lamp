@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
-    private const val BASE_URL = "https://restcountries.eu/rest/v2/"
+    private const val BASE_URL = "https://restcountries.com/v3.1/"
 
     @Singleton
     @Provides
@@ -35,7 +35,7 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .addConverterFactory(jsonBuilder.asConverterFactory("application/json".toMediaType()))
         .baseUrl(BASE_URL)
         .client(okHttpClient)
         .build()

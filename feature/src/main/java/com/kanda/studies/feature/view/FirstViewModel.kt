@@ -16,6 +16,9 @@ class FirstViewModel @Inject constructor(private val repository: Repository) : V
     private val _flow = MutableSharedFlow<List<Country>>()
     val countries: SharedFlow<List<Country>> = _flow
 
+    init {
+        list()
+    }
     fun list() {
         viewModelScope.launch {
             try {
