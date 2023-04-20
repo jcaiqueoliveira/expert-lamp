@@ -1,33 +1,35 @@
 package com.kanda.studies.feature.view
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kanda.studies.feature.data.Country
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import com.kanda.studies.feature.data.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
-class FirstViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class FirstViewModel @Inject constructor(private val repository: Repository) : MoleculeViewModel<Unit, Model>() {
 
-    private val _flow = MutableSharedFlow<List<Country>>()
-    val countries: SharedFlow<List<Country>> = _flow
-
-    init {
-        list()
-    }
-    fun list() {
-        viewModelScope.launch {
-            try {
-                val countriesResponse = repository.getCountries()
-                _flow.emit(countriesResponse)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
+    @Composable
+    override fun models(events: Flow<Unit>): Model = CountriesPresenter(repository, events)
 }
+
+@Composable
+fun CountriesPresenter(repository: Repository, events: Flow<Unit>): Model {
+    val country = remember { mutableStateListOf<String>() }
+    LaunchedEffect(events) {
+        country.clear()
+        country.addAll(repository.getCountries().map { it.name.common })
+    }
+    return Model(
+        loading = false,
+        countries = country
+    )
+}
+
+data class Model(
+    val loading: Boolean = true,
+    val countries: List<String>
+)
